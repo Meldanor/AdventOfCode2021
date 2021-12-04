@@ -2,7 +2,12 @@ defmodule Mix.Tasks.Aoc do
   @moduledoc "Runs a challenge for a given day. `mix aoc <Day (1-24)> <Challenge (1-2)>`"
   @shortdoc "Echoes arguments"
 
-  @challenges [&D01.Challenge.run/1, &D02.Challenge.run/1, &D03.Challenge.run/1]
+  @challenges [
+    &D01.Challenge.run/1,
+    &D02.Challenge.run/1,
+    &D03.Challenge.run/1,
+    &D04.Challenge.run/1
+  ]
 
   use Mix.Task
 

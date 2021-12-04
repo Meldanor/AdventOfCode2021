@@ -8,8 +8,8 @@ defmodule D04.Challenge do
     bingo_numbers = lines |> Enum.at(0) |> String.split(",") |> Enum.map(&String.to_integer/1)
     boards = parse_boards(lines)
 
+    # Go through the numbers until the first board has enough numbers marked
     {winner, last_number} =
-      # Go through the numbers until the first board has enough numbers marked
       Enum.reduce_while(bingo_numbers, boards, fn number, boards ->
         boards = mark_number_on_boards(boards, number)
         winner = find_winner(boards)
@@ -20,7 +20,32 @@ defmodule D04.Challenge do
   end
 
   def run(2) do
-    nil
+    lines = Utils.read_input(4)
+    bingo_numbers = lines |> Enum.at(0) |> String.split(",") |> Enum.map(&String.to_integer/1)
+    init_boards = parse_boards(lines)
+
+    # Go through the numbers until only one board exists and has won
+    {winner, last_number} =
+      Enum.reduce_while(bingo_numbers, init_boards, fn number, boards ->
+        boards = mark_number_on_boards(boards, number)
+        winners = find_winners(boards)
+
+        # No winner? Resume as usual
+        if Enum.empty?(winners) do
+          {:cont, boards}
+        else
+          # Only one board and it has won? Halt the loop
+          if length(boards) == 1 do
+            {:halt, {hd(winners), number}}
+            # Multiple winners? Remove their boards
+          else
+            boards = Enum.reject(boards, fn board -> board in winners end)
+            {:cont, boards}
+          end
+        end
+      end)
+
+    Logger.info("Winning score: #{calculate_winner_score(winner, last_number)}")
   end
 
   defp parse_boards(lines) do
@@ -59,15 +84,19 @@ defmodule D04.Challenge do
     |> Enum.find(&won?/1)
   end
 
+  defp find_winners(boards) do
+    boards
+    |> Enum.filter(&won?/1)
+  end
+
   defp won?(board) do
-    # Check rows
     row_bingo = Enum.any?(0..4, fn row -> row(board, row) |> bingo? end)
     col_bingo = Enum.any?(0..4, fn col -> column(board, col) |> bingo? end)
     row_bingo or col_bingo
   end
 
   defp bingo?(numbers) do
-    Enum.all?(numbers, fn val -> val.marked == true end)
+    Enum.all?(numbers, fn val -> val.marked end)
   end
 
   defp calculate_winner_score(winner_board, last_number) do

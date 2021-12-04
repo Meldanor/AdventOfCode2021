@@ -11,7 +11,7 @@ Solutions for the [Advent of Code 2021](https://adventofcode.com/2021/) in Elixi
 
 Execute
 
-    mix aoc <Day>
+    mix aoc <Day> <1 or 2 for the challenge>
 
 where Day starts at 1.
 

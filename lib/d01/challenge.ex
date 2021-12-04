@@ -5,10 +5,7 @@ defmodule D01.Challenge do
 
   def run(1) do
     result =
-      File.read!("./lib/d01/input")
-      |> String.split("\n")
-      |> Enum.reject(fn s -> String.length(s) == 0 end)
-      |> Enum.map(&String.to_integer/1)
+      Utils.read_input(1, &String.to_integer/1)
       |> count_increases()
 
     Logger.info("#{result.increased}x increased")
@@ -16,10 +13,7 @@ defmodule D01.Challenge do
 
   def run(2) do
     result =
-      File.read!("./lib/d01/input")
-      |> String.split("\n")
-      |> Enum.reject(fn s -> String.length(s) == 0 end)
-      |> Enum.map(&String.to_integer/1)
+      Utils.read_input(1, &String.to_integer/1)
       |> sum_windows()
       |> count_increases()
 

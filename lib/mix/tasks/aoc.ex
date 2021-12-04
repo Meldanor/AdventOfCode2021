@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Aoc do
 
   use Mix.Task
 
-  import Logger
+  require Logger
 
   @impl Mix.Task
   def run(args) do
@@ -15,5 +15,4 @@ defmodule Mix.Tasks.Aoc do
     Logger.info("Executing challenge of day #{day}")
     challenge.()
   end
-
 end

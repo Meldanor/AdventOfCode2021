@@ -8,6 +8,7 @@ defmodule D05.Challenge do
 
     result =
       lines
+      |> Stream.reject(&diagonal?/1)
       |> Stream.flat_map(&cover_points/1)
       # Count how often a point is covered
       |> Enum.frequencies()
@@ -19,6 +20,16 @@ defmodule D05.Challenge do
 
   def run(2) do
     lines = Utils.read_input(5, &map_input/1)
+
+    result =
+      lines
+      |> Stream.flat_map(&cover_points/1)
+      # Count how often a point is covered
+      |> Enum.frequencies()
+      # Count the points that are covered multiple times
+      |> Enum.count(fn {_, val} -> val > 1 end)
+
+    Logger.info("#{result} points are visited multiple times, even by diagonals")
   end
 
   defp map_input(string) do
@@ -39,18 +50,23 @@ defmodule D05.Challenge do
     }
   end
 
-  defp cover_points(%{a: %{x: x1, y: y1}, b: %{x: x2, y: y2}} = _line) when x1 == x2 do
-    Range.new(y1, y2)
-    |> Stream.map(fn y -> %{x: x1, y: y} end)
+  defp diagonal?(%{a: %{x: x1, y: y1}, b: %{x: x2, y: y2}}) when x1 == x2 or y1 == y2, do: false
+  defp diagonal?(_), do: true
+
+  defp cover_points(%{a: %{x: x1, y: y1}, b: %{x: x2, y: y2}} = _line) do
+    x_diff = x2 - x1
+    y_diff = y2 - y1
+    x_dir = dir(x_diff)
+    y_dir = dir(y_diff)
+    length = max(abs(x_diff), abs(y_diff))
+
+    Range.new(0, length)
+    |> Enum.map(fn step ->
+      %{x: x1 + step * x_dir, y: y1 + step * y_dir}
+    end)
   end
 
-  defp cover_points(%{a: %{x: x1, y: y1}, b: %{x: x2, y: y2}} = _line) when y1 == y2 do
-    Range.new(x1, x2)
-    |> Stream.map(fn x -> %{x: x, y: y1} end)
-  end
-
-  # Do not cover diagonal lines
-  defp cover_points(_) do
-    []
-  end
+  defp dir(n) when n > 0, do: 1
+  defp dir(n) when n < 0, do: -1
+  defp dir(n) when n == 0, do: 0
 end

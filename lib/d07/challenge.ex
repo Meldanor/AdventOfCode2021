@@ -23,6 +23,30 @@ defmodule D07.Challenge do
   end
 
   def run(2) do
+    crap_positions =
+      Utils.read_input(7) |> hd |> String.split(",") |> Enum.map(&String.to_integer/1)
+
+    average = average(crap_positions)
+
+    median = median(crap_positions)
+    result =
+    # Possible numbers - it must be around their average or median
+    [
+      {"Average - 1", average - 1},
+      {"Average    ", average},
+      {"Average + 1", average + 1},
+      {"Median  - 1", median - 1},
+      {"Median     ", median},
+      {"Median  + 1", median + 1 }
+    ]
+    # Calculate it for all their positions
+    |> Stream.map(fn {name, val} -> {name, val, total_distance_from_minimum(val, crap_positions, :increasing)} end)
+    # Find the minimum number
+    |> Enum.sort_by(fn {_name, _val, sum} -> sum end)
+    |> IO.inspect()
+    |> hd()
+
+    Logger.info("The craps need a minimum of #{elem(result, 2)} fuel ")
   end
 
   defp average(numbers) do
@@ -39,5 +63,16 @@ defmodule D07.Challenge do
     numbers
     |> Stream.map(fn number -> abs(minimum - number) end)
     |> Enum.sum()
+  end
+
+
+  defp total_distance_from_minimum(minimum, numbers, :increasing) do
+    numbers
+    |> Stream.map(fn number -> sum_of_natural_numbers(abs(minimum - number)) end)
+    |> Enum.sum()
+  end
+
+  defp sum_of_natural_numbers(n) do
+    ((n * (n + 1)) / 2) |> trunc
   end
 end

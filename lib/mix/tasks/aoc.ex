@@ -11,7 +11,8 @@ defmodule Mix.Tasks.Aoc do
     &D06.Challenge.run/1,
     &D07.Challenge.run/1,
     &D08.Challenge.run/1,
-    &D09.Challenge.run/1
+    &D09.Challenge.run/1,
+    &D10.Challenge.run/1
   ]
 
   use Mix.Task
